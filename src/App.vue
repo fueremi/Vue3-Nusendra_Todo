@@ -20,8 +20,8 @@
         <hr />
         <div class="mt-3">
           <List
-            v-if="todos.length > 0"
-            :todos="todos"
+            v-if="list.length > 0"
+            :todos="list"
             @deleteTodo="onDelete"
             @doneTodo="onDone"
           />
@@ -44,56 +44,119 @@
 
 <script>
 import List from "./components/List.vue";
+import { ref, reactive, onMounted, toRefs, computed } from "vue";
 
 export default {
-  name: "App",
-  data() {
-    return {
-      todo: "",
-      todos: [],
-    };
-  },
   components: {
     List,
   },
-  computed: {
-    totalTodo() {
-      return this.todos.length;
-    },
-  },
-  methods: {
-    addTodo() {
-      this.todos.unshift({
-        activity: this.todo,
+  setup() {
+    // ? Data
+    const todo = ref("");
+    const todos = reactive({
+      list: [],
+    });
+
+    // ? computed: {}
+    const totalTodo = computed(() => {
+      return todos.list.length;
+    });
+
+    // ? methods: {}
+    const addTodo = () => {
+      todos.list.unshift({
+        activity: todo.value,
         isDone: false,
       });
-      this.saveToLocalStorage();
-      this.todo = "";
-    },
-    onDelete(i) {
-      this.todos = this.todos.filter((item, index) => {
+      todo.value = "";
+      saveToLocalStorage();
+    };
+
+    const onDelete = (i) => {
+      todos.list = todos.list.filter((item, index) => {
         if (index !== i) {
           return item;
         }
       });
-      this.saveToLocalStorage();
-    },
-    onDone(i) {
-      this.todos = this.todos.filter((item, index) => {
+      saveToLocalStorage();
+    };
+
+    const onDone = (i) => {
+      todos.list = todos.list.filter((item, index) => {
         if (index === i) {
           item.isDone = !item.isDone;
         }
-
         return item;
       });
-      this.saveToLocalStorage();
-    },
-    saveToLocalStorage() {
-      localStorage.setItem("todos", JSON.stringify(this.todos));
-    },
+      saveToLocalStorage();
+    };
+
+    const saveToLocalStorage = () =>
+      localStorage.setItem("todos", JSON.stringify(todos.list));
+
+    // ? mounted() {}
+    onMounted(() => {
+      todos.list = JSON.parse(localStorage.getItem("todos"));
+    });
+
+    return {
+      todo,
+      ...toRefs(todos),
+      totalTodo,
+      addTodo,
+      onDone,
+      onDelete,
+    };
   },
-  mounted() {
-    this.todos = JSON.parse(localStorage.getItem("todos"));
-  },
+
+  // name: "App",
+  // data() {
+  //   return {
+  //     todo: "",
+  //     todos: [],
+  //   };
+  // },
+  // components: {
+  //   List,
+  // },
+  // computed: {
+  //   totalTodo() {
+  //     return this.todos.length;
+  //   },
+  // },
+  // methods: {
+  //   addTodo() {
+  //     this.todos.unshift({
+  //       activity: this.todo,
+  //       isDone: false,
+  //     });
+  //     this.saveToLocalStorage();
+  //     this.todo = "";
+  //   },
+  //   onDelete(i) {
+  //     this.todos = this.todos.filter((item, index) => {
+  //       if (index !== i) {
+  //         return item;
+  //       }
+  //     });
+  //     this.saveToLocalStorage();
+  //   },
+  //   onDone(i) {
+  //     this.todos = this.todos.filter((item, index) => {
+  //       if (index === i) {
+  //         item.isDone = !item.isDone;
+  //       }
+
+  //       return item;
+  //     });
+  //     this.saveToLocalStorage();
+  //   },
+  //   saveToLocalStorage() {
+  //     localStorage.setItem("todos", JSON.stringify(this.todos));
+  //   },
+  // },
+  // mounted() {
+  //   this.todos = JSON.parse(localStorage.getItem("todos"));
+  // },
 };
 </script>

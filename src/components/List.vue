@@ -28,20 +28,39 @@
 
 <script>
 export default {
-  name: "List",
   props: {
     todos: {
       type: Array,
       default: [],
     },
   },
-  methods: {
-    deleteTodo(i) {
-      this.$emit("deleteTodo", i);
-    },
-    doneTodo(i) {
-      this.$emit("doneTodo", i);
-    },
+  setup(props, { emit }) {
+    const deleteTodo = (index) => {
+      emit("deleteTodo", index);
+    };
+
+    const doneTodo = (index) => {
+      emit("doneTodo", index);
+    };
+
+    return { deleteTodo, doneTodo };
   },
 };
+
+//   name: "List",
+//   props: {
+//     todos: {
+//       type: Array,
+//       default: [],
+//     },
+//   },
+//   methods: {
+//     deleteTodo(i) {
+//       this.$emit("deleteTodo", i);
+//     },
+//     doneTodo(i) {
+//       this.$emit("doneTodo", i);
+//     },
+//   },
+// };
 </script>
