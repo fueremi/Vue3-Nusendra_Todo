@@ -96,7 +96,8 @@ export default {
 
     // ? mounted() {}
     onMounted(() => {
-      todos.list = JSON.parse(localStorage.getItem("todos"));
+      const items = localStorage.getItem("todos");
+      todos.list = items ? JSON.parse(items) : [];
     });
 
     return {
